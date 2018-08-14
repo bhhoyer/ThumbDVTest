@@ -108,9 +108,9 @@ def main():
     parser.add_argument('--time', '-t', type=int, help="Duration of ThumbDV decode test", default=2)
 
     args = parser.parse_args()
-    
+
     print "ThumbDV Test Program"
-    print "Insert ThumbDV to test"
+    print "Insert ThumbDV to test CTL-C to Quit"
 
     if args.port == None:
         context = pyudev.Context()
