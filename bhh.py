@@ -96,11 +96,11 @@ def test_ambe_port(port, speed=460800, seconds=1):
     serial_port.close()
 
 #added BHH
-'''subprocess.call(["./ftx_prog",
-   	"--manufacturer","NW Digital Radio 02/18",
-   	"--product","ThumbDV",
-   	"--max-bus-power","200"])
-'''
+    subprocess.call(["./ftx_prog",
+        "--manufacturer","NW Digital Radio 02/18",
+        "--product","ThumbDV",
+        "--max-bus-power","200"])
+
 def main():
     parser = argparse.ArgumentParser(description="Test ThumbDV Devices")
     parser.add_argument('--port', '-p', help="Port name to test.  If absent will wait for a ThumbDV to be plugged in.")
