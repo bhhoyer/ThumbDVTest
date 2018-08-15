@@ -49,7 +49,7 @@ def send_ambe_command(port, command):
     response = header[2] + port.read(length)
     return response
 
-def test_ambe_port(port, speed=460800, seconds=1):
+def test_ambe_port(port, speed=460800, seconds=1, ftprog=None):
 
     open('/sys/bus/usb-serial/devices/' + basename(port) + '/latency_timer', 'w').write('1')
     serial_port = serial.Serial(port, speed, timeout=1, rtscts=True)
@@ -95,17 +95,20 @@ def test_ambe_port(port, speed=460800, seconds=1):
     print "\nDone"
     serial_port.close()
 
-#added BHH
-    subprocess.call(["./ftx_prog",
-        "--manufacturer","NW Digital Radio 02/18",
-        "--product","ThumbDV",
-        "--max-bus-power","200"])
+    #added BHH
+    if ftprog != None:
+        man_str = "NW Digital Radio " + ftprog
+        subprocess.call(["./ftx_prog",
+            "--manufacturer",man_str,
+            "--product","ThumbDV",
+            "--max-bus-power","200"])
 
 def main():
     parser = argparse.ArgumentParser(description="Test ThumbDV Devices")
     parser.add_argument('--port', '-p', help="Port name to test.  If absent will wait for a ThumbDV to be plugged in.")
     parser.add_argument('--speed', '-s', type=int, help="Speed to talk to the ThumbDV device(s) at", default=460800)
     parser.add_argument('--time', '-t', type=int, help="Duration of ThumbDV decode test", default=2)
+    parser.add_argument('--ftprog', '-f', type=str, help="Manufacturing Date mm/yy")
 
     args = parser.parse_args()
 
@@ -127,9 +130,9 @@ def main():
             print "Found and FTDI Device insertion at {0}".format(device.device_node)
             print 'FTDI Manufacturer is {0}'.format(device['ID_VENDOR_ENC'])
             print "Opening {0}...".format(device.device_node)
-            test_ambe_port(device.device_node, args.speed, args.time)
+            test_ambe_port(device.device_node, args.speed, args.time, args.ftprog)
     else:
-        test_ambe_port(args.port, args.speed, args.time)
+        test_ambe_port(args.port, args.speed, args.time, args.ftprog)
 
 if __name__ == "__main__":
     main()
