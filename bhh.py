@@ -49,7 +49,7 @@ def send_ambe_command(port, command):
     response = header[2] + port.read(length)
     return response
 
-def test_ambe_port(port, speed=460800, seconds=1, ftprog=None):
+def test_ambe_port(port, speed=460800, seconds=1):
 
     open('/sys/bus/usb-serial/devices/' + basename(port) + '/latency_timer', 'w').write('1')
     serial_port = serial.Serial(port, speed, timeout=1, rtscts=True)
@@ -95,13 +95,13 @@ def test_ambe_port(port, speed=460800, seconds=1, ftprog=None):
     print "\nDone"
     serial_port.close()
 
-    #added BHH
-    if ftprog != None:
-        man_str = "NW Digital Radio " + ftprog
+def program_thumbdv(date_code):
+        man_str = "NW Digital Radio Manufacutred on {}".format(date_code)
         subprocess.call(["./ftx_prog",
-            "--manufacturer",man_str,
-            "--product","ThumbDV",
-            "--max-bus-power","200"])
+            "--manufacturer", man_str,
+            "--product", "ThumbDV",
+            "--max-bus-power", "200"
+        ])
 
 def main():
     parser = argparse.ArgumentParser(description="Test ThumbDV Devices")
@@ -130,9 +130,13 @@ def main():
             print "Found and FTDI Device insertion at {0}".format(device.device_node)
             print 'FTDI Manufacturer is {0}'.format(device['ID_VENDOR_ENC'])
             print "Opening {0}...".format(device.device_node)
-            test_ambe_port(device.device_node, args.speed, args.time, args.ftprog)
+            test_ambe_port(device.device_node, args.speed, args.time)
+            if(args.ftprog != None):
+                program_thumbdv(args.ftprog)
     else:
-        test_ambe_port(args.port, args.speed, args.time, args.ftprog)
+        test_ambe_port(args.port, args.speed, args.time)
+        if(args.ftprog != None):
+            program_thumbdv(args.ftprog)
 
 if __name__ == "__main__":
     main()
